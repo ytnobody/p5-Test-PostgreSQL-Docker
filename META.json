@@ -1,5 +1,5 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "A Postgresql mock server for testing perl programs",
    "author" : [
       "Satoshi Azuma <ytnobody@gmail.com>"
    ],
@@ -42,6 +42,11 @@
       },
       "runtime" : {
          "requires" : {
+            "DBD::Pg" : "0",
+            "DBI" : "0",
+            "Guard" : "0",
+            "Net::EmptyPort" : "0",
+            "Sub::Retry" : "0",
             "perl" : "5.008001"
          }
       },
