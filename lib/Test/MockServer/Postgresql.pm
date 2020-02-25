@@ -102,19 +102,26 @@ Test::MockServer::Postgresql - A Postgresql mock server for testing perl program
     use Test::More;
     use Test::MockServer::Postgresql;
     
-    # raunch a container from postgres:12-alpine image
+    # 1. create a instance of Test::MockServer::Postgresql with postgres:12-alpine image
     my $server = Test::MockServer::Postgresql->new(version => 12, distro => "alpine");
+    
+    # 2. create/run a container
     $server->run();
     
-    # puke initialization data into postgresql on a container
+    # 3. puke initialization data into postgresql on a container
     $server->fixture("/path/to/fixture.sql");
     
-    # get a Database Handler(a DBI::db object) from mock server object
+    # 4. get a Database Handler(a DBI::db object) from mock server object
     my $dbh = $server->dbh();
+    
+    # (or call steps of 2 to 4 as method-chain)
+    my $dbh = $server->run->fixture("/path/to/fixture.sql")->dbh;
+    
+    # 5. query to database
     my $sth = $dbh->prepare("SELECT * FROM Users WHERE id=?");
     $sth->execute(1);
     
-    # put your own test code below
+    # 6. put your own test code below
     my $row $sth->fetchrow_hashref();
     is $row->{name}, "ytnobody";
     
