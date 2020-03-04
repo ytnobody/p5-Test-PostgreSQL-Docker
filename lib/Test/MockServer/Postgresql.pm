@@ -45,7 +45,7 @@ sub run {
 
     my $host = $self->{host};
     my $user = $self->{user};
-    my $pass = $self->{pass};
+    my $pass = $self->{password};
     my $port = $self->{port};
     my $dbname = $self->{dbname};
     `docker run --rm --name $ctname -p $host:$port:5432 -e POSTGRES_USER=$user -e POSTGRES_PASSWORD=$pass -e POSTGRES_DB=$dbname -d $image`;
