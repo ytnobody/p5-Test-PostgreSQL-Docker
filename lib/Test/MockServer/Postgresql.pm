@@ -14,6 +14,7 @@ sub new {
     my ($class, %opts) = @_;
     bless {
         oid     => int(rand(100000000)),
+        pgname  => "postgres",
         version => "12",
         distro  => "debian",
         port    => empty_port(),
@@ -93,7 +94,7 @@ sub container_name {
 sub image_name {
     my ($self) = @_;
     my $distro_part = $self->{distro} eq "alpine" ? "-alpine" : "";
-    sprintf "postgres:%s%s", $self->{version}, $distro_part;
+    sprintf "%s:%s%s", $self->{pgname}, $self->{version}, $distro_part;
 }
 
 1;
