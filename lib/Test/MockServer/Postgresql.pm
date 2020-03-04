@@ -35,7 +35,7 @@ sub pull {
 
 sub run {
     my ($self, %opt) = @_;
-    $self->pull() unless $opt{skip_pull};;
+    $self->pull() unless (exists $opt{skip_pull} ? $opt{skip_pull} : 1);
 
     my $image = $self->image_name();
     my $ctname = $self->container_name();
