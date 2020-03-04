@@ -33,8 +33,8 @@ sub pull {
 }
 
 sub run {
-    my ($self) = @_;
-    $self->pull();
+    my ($self, %opt) = @_;
+    $self->pull() unless $opt{skip_pull};;
 
     my $image = $self->image_name();
     my $ctname = $self->container_name();
@@ -49,6 +49,8 @@ sub run {
     my $port = $self->{port};
     my $dbname = $self->{dbname};
     `docker run --rm --name $ctname -p $host:$port:5432 -e POSTGRES_USER=$user -e POSTGRES_PASSWORD=$pass -e POSTGRES_DB=$dbname -d $image`;
+
+    $self->dbh unless $opt{skip_connect};
     $self;
 }
 
