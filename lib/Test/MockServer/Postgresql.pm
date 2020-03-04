@@ -14,13 +14,14 @@ sub new {
     my ($class, %opts) = @_;
     bless {
         oid     => int(rand(100000000)),
-        version => $opts{version} || "12", 
-        distro  => $opts{distro} || "debian",
+        version => "12",
+        distro  => "debian",
         port    => empty_port(),
         host    => "127.0.0.1",
         user    => "admin",
-        pass    => "admin",
+        password=> "admin",
         dbname  => "admin",
+        %opts,
     }, $class;
 }
 
