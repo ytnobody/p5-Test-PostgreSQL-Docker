@@ -12,7 +12,7 @@ my %opt = (
 
 my $server = Test::MockServer::Postgresql->new(%opt);
 
-ok $server->run(skip_pull => 1), "server is runing";
+ok $server->run(), "server is runing";
 
 my $dsn = $server->dsn;
 
