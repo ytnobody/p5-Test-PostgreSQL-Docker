@@ -63,8 +63,13 @@ sub fixture {
 }
 
 sub dsn {
-    my ($self) = @_;
-    sprintf "dbi:Pg:dbname=%s;host=%s;port=%s", $self->{dbname}, $self->{host}, $self->{port};
+    my ($self, %args) = @_;
+    $args{port}     ||= $self->{port};
+    $args{host}     ||= $self->{host};
+    $args{user}     ||= $self->{user};
+    $args{dbname}   ||= $self->{dbname};
+    $args{password} ||= $self->{password};
+    return 'DBI:Pg:' . join(';', map { "$_=$args{$_}" } sort keys %args);
 }
 
 sub dbh {
