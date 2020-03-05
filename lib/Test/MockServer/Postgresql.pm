@@ -15,8 +15,7 @@ sub new {
     bless {
         oid     => int(rand(100000000)),
         pgname  => "postgres",
-        version => "12",
-        distro  => "debian",
+        tag     => 'latest',
         port    => empty_port(),
         host    => "127.0.0.1",
         user    => "admin",
@@ -88,13 +87,12 @@ sub dbh {
 
 sub container_name {
     my ($self) = @_;
-    sprintf "postgres-%s-%s-%08d", $self->{version}, $self->{distro}, $self->{oid};
+    sprintf "%s-%s-%08d", $self->{pgname}, $self->{tag}, $self->{oid};
 }
 
 sub image_name {
     my ($self) = @_;
-    my $distro_part = $self->{distro} eq "alpine" ? "-alpine" : "";
-    sprintf "%s:%s%s", $self->{pgname}, $self->{version}, $distro_part;
+    sprintf "%s:%s", $self->{pgname}, $self->{tag};
 }
 
 1;
