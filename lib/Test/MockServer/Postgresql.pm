@@ -12,8 +12,7 @@ our $VERSION = "0.01";
 
 sub new {
     my ($class, %opts) = @_;
-    bless {
-        oid     => int(rand(100000000)),
+    my $self = bless {
         pgname  => "postgres",
         tag     => 'latest',
         port    => empty_port(),
@@ -23,6 +22,14 @@ sub new {
         dbname  => "test",
         %opts,
     }, $class;
+    $self->oid;
+    return $self;
+}
+
+sub oid {
+    my ( $self ) = @_;
+    return $self->{oid} if defined $self->{oid};
+    $self->{oid} = ("$self" =~ /HASH\(0x([0-9a-f]+)\)/)[0];
 }
 
 sub pull {
@@ -91,7 +98,7 @@ sub port {
 
 sub container_name {
     my ($self) = @_;
-    sprintf "%s-%s-%08d", $self->{pgname}, $self->{tag}, $self->{oid};
+    sprintf "%s-%s-%s", $self->{pgname}, $self->{tag}, $self->oid;
 }
 
 sub image_name {
@@ -196,6 +203,13 @@ Skip image check. Default is C<true>.
 Skip connect database. Default is C<false>.
 
 =back
+
+=head2 oid
+
+    $oid = $server->oid()
+
+Return an unique id.
+
 
 =head2 dsn
 
