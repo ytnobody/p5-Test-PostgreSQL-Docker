@@ -110,7 +110,7 @@ Test::MockServer::Postgresql - A Postgresql mock server for testing perl program
     use Test::MockServer::Postgresql;
     
     # 1. create a instance of Test::MockServer::Postgresql with postgres:12-alpine image
-    my $server = Test::MockServer::Postgresql->new(version => 12, distro => "alpine");
+    my $server = Test::MockServer::Postgresql->new(tag => '12-alpine');
     
     # 2. create/run a container
     $server->run();
@@ -140,19 +140,61 @@ Test::MockServer::Postgresql run the postgres container on the Docker, for testi
 
 B<**NOTE**> Maybe this module doesn't work on the Windows, because this module uses some backticks for use the Docker.
 
-=head1 OPTIONS FOR CONSTRACTOR
+
+=head1 METHODS
+
+=head2 new
+
+    $server = Test::MockServer::Postgresql->new(%opt)
 
 =over 2
 
-=item distro (int)
+=item pgname (str)
 
-A distribution name of container OS. You may specify "debian" or "alpine". Default is "debian".
+A distribution name. Default is C<postgres>.
 
-=item version (str)
+=item tag (str)
 
-A version number of the PostgreSQL. Default is 12. 
+A tag of the PostgreSQL. Default is C<latest>. 
 
 =back
+
+=head2 run
+
+    $server = $server->run(%opt)
+
+1. Check image with C<docker pull>.
+
+2. C<docker run>
+
+3. C<connect database>
+
+=over 2
+
+=item skip_pull (bool)
+
+Skip image check. Default is C<true>.
+
+=item skip_connect (bool)
+
+Skip connect database. Default is C<false>.
+
+=back
+
+=head2 dsn
+
+    $dsn = $server->dsn(%opt)
+
+
+=head2 dbh
+
+    $dbh = $server->dbh()
+
+
+=head2 fixture
+
+    $server = $server->fixture($path)
+
 
 =head1 REQUIREMENT
 
