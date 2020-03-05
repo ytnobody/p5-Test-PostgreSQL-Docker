@@ -85,6 +85,10 @@ sub dbh {
     $self->{dbh};
 }
 
+sub port {
+    shift->{port};
+}
+
 sub container_name {
     my ($self) = @_;
     sprintf "%s-%s-%08d", $self->{pgname}, $self->{tag}, $self->{oid};
