@@ -215,6 +215,12 @@ Return an unique id.
 
     $dsn = $server->dsn(%opt)
 
+=head2 port
+
+    $port = $server->port()
+
+Return a PostgreSQL server port.
+
 
 =head2 dbh
 
