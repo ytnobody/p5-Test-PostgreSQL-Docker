@@ -4,8 +4,7 @@ use Test::More;
 use Test::MockServer::Postgresql;
 
 my %opt = (
-    version => 12,
-    distro => 'alpine',
+    tag    => '12-alpine',
     dbname => 'testdb',
     user   => 'foobar',
 );

@@ -4,7 +4,7 @@ use Test::More;
 use Test::MockServer::Postgresql;
 use File::Spec;
 
-my $server = Test::MockServer::Postgresql->new(version => 12, distro => "alpine");
+my $server = Test::MockServer::Postgresql->new(tag => '12-alpine');
 isa_ok($server, "Test::MockServer::Postgresql");
 can_ok($server, qw/pull run fixture dbh dsn container_name image_name/);
 
