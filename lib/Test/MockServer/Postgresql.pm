@@ -81,7 +81,7 @@ sub dbh {
 
     $option ||= {AutoCommit => 0, RaiseError => 1, PrintError => 0};
     $self->{dbh} = retry 5, 2, sub {
-        DBI->connect($self->dsn, $self->{user}, $self->{pass}, $option);
+        DBI->connect($self->dsn, '', '', $option);
     };
     $self->{dbh};
 }
