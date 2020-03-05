@@ -18,9 +18,9 @@ sub new {
         tag     => 'latest',
         port    => empty_port(),
         host    => "127.0.0.1",
-        user    => "admin",
-        password=> "admin",
-        dbname  => "admin",
+        user    => "postgres",
+        password=> "postgres",
+        dbname  => "test",
         %opts,
     }, $class;
 }
@@ -160,6 +160,18 @@ A distribution name. Default is C<postgres>.
 =item tag (str)
 
 A tag of the PostgreSQL. Default is C<latest>. 
+
+=item user (str)
+
+Default is C<postgres>.
+
+=item password (str)
+
+Default is C<postgres>.
+
+=item dbname (str)
+
+Default is C<test>.
 
 =back
 
