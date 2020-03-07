@@ -190,6 +190,10 @@ A distribution name. Default is C<postgres>.
 
 A tag of the PostgreSQL. Default is C<latest>. 
 
+=item oid (str)
+
+An uniqe id. Default is the object memory addres.
+
 =item dbowner (str)
 
 Default is C<postgres>.
@@ -231,6 +235,20 @@ Skip connect database. Default is C<false>.
     $oid = $server->oid()
 
 Return an unique id.
+
+
+=head2 container_name
+
+    $container_name = $server->container_name()
+
+Return the docker container name C<sprintf('%s-%s-%s', $pgname, $tag, $oid)>.
+
+
+=head2 image_name
+
+    $image_name = $server->image_name()
+
+Return the docker image name.
 
 
 =head2 dsn
