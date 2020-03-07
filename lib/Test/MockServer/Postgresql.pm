@@ -36,7 +36,7 @@ sub oid {
 sub pull {
     my ($self) = @_;
     my $image = $self->image_name();
-    `docker pull --quiet $image`;
+    $self->docker_cmd(pull => '--quiet', $image);
     $self;
 }
 
@@ -46,9 +46,10 @@ sub run {
 
     my $image = $self->image_name();
     my $ctname = $self->container_name();
+    my $class  = ref($self);
     $self->{cleanup} = guard {
         $self->{dbh}->disconnect() if defined $self->{dbh};
-        `docker kill $ctname`;
+        $class->docker_cmd(kill => $ctname); # $self is undef?
     };
 
     my $host = $self->{host};
@@ -56,7 +57,7 @@ sub run {
     my $pass = $self->{password};
     my $port = $self->{port};
     my $dbname = $self->{dbname};
-    `docker run --rm --name $ctname -p $host:$port:5432 -e POSTGRES_USER=$user -e POSTGRES_PASSWORD=$pass -e POSTGRES_DB=$dbname -d $image`;
+    $self->docker_cmd(run => "--rm --name $ctname -p $host:$port:5432 -e POSTGRES_USER=$user -e POSTGRES_PASSWORD=$pass -e POSTGRES_DB=$dbname -d $image");
 
     $self->dbh unless $opt{skip_connect};
     $self;
