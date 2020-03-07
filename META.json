@@ -68,7 +68,7 @@
          "web" : "https://github.com/ytnobody/p5-Test-PostgreSQL-Docker"
       }
    },
-   "version" : "0.01",
+   "version" : "0.02",
    "x_authority" : "cpan:YTURTLE",
    "x_contributors" : [
       "makamaka <makamaka.donzoko@gmail.com>"

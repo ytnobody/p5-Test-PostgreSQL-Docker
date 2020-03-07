@@ -8,7 +8,7 @@ use DBD::Pg;
 use Sub::Retry qw/retry/;
 use Net::EmptyPort qw/empty_port/;
 
-our $VERSION = "0.01";
+our $VERSION = "0.02";
 our $DEBUG;
 
 sub new {
