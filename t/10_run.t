@@ -24,7 +24,7 @@ is_deeply($res, {'1' => {
     'account_id' => 1,
     'account_name' => 'ytnobody',
     'email' => 'ytnobody@gmail.com',
-    'password' => 'hogehoge                                                        '
+    'password' => 'hogehoge'
 }});
 
 done_testing;
