@@ -1,5 +1,5 @@
 package Test::MockServer::Postgresql;
-use 5.008001;
+use 5.014;
 use strict;
 use warnings;
 use Guard qw/guard/;
