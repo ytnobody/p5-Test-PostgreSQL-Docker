@@ -9,6 +9,7 @@ use Sub::Retry qw/retry/;
 use Net::EmptyPort qw/empty_port/;
 
 our $VERSION = "0.01";
+our $DEBUG;
 
 sub new {
     my ($class, %opts) = @_;
@@ -61,13 +62,34 @@ sub run {
     $self;
 }
 
-sub fixture {
-    my ($self, $filepath) = @_;
-    my $dbh = $self->dbh(); ## waiting for DB connection
-    my $ctname = $self->container_name();
-    my $dbname = $self->{dbname};
-    my $user = $self->{user};
-    `docker exec -i $ctname psql -h localhost -p 5432 -U $user $dbname < $filepath`;
+sub docker_cmd {
+    my ( $self, $action, @args  ) = @_;
+    my $cmd = join(' ', 'docker', $action, @args);
+    $DEBUG && print STDERR $cmd,"\n";
+    `$cmd`;
+    $self;
+}
+
+sub psql_args {
+    my $self = shift;
+    if ( @_ ) {
+        $self->{psql_args} = $_[0];
+    }
+    $self->{psql_args}
+        ||= sprintf('-h %s -p %s -U %s -d %s', $self->{host}, 5432, $self->{dbowner}, $self->{dbname});
+}
+
+sub run_psql {
+    my ($self, @args) = @_;
+    $self->dbh(); ## waiting for DB connection
+    $self->docker_cmd( exec => '-i', $self->container_name, 'psql', $self->psql_args, @args );
+}
+
+sub run_psql_scripts {
+    my ($self, @scripts) = @_;
+    for my $script ( @scripts ) {
+        $self->run_psql("< $script");
+    }
     $self;
 }
 
@@ -127,13 +149,13 @@ Test::MockServer::Postgresql - A Postgresql mock server for testing perl program
     $server->run();
     
     # 3. puke initialization data into postgresql on a container
-    $server->fixture("/path/to/fixture.sql");
+    $server->run_psql_scripts("/path/to/fixture.sql");
     
     # 4. get a Database Handler(a DBI::db object) from mock server object
     my $dbh = $server->dbh();
     
     # (or call steps of 2 to 4 as method-chain)
-    my $dbh = $server->run->fixture("/path/to/fixture.sql")->dbh;
+    my $dbh = $server->run->run_psql_scripts("/path/to/fixture.sql")->dbh;
     
     # 5. query to database
     my $sth = $dbh->prepare("SELECT * FROM Users WHERE id=?");
@@ -221,15 +243,29 @@ Return an unique id.
 
 Return a PostgreSQL server port.
 
-
 =head2 dbh
 
     $dbh = $server->dbh()
 
+=head2 psql_args
 
-=head2 fixture
+    $psql_args = $server->psql_args()
+    $psql_args = $server->psql_args($args)
 
-    $server = $server->fixture($path)
+Arguments to C<psql> in C<run_psql> and C<run_psql_scripts>.
+Default is C<sprintf('-h %s -p %s -U %s -d %s', $self->{host}, 5432, $self->{dbowner}, $self->{dbname})>.
+
+
+=head2 run_psql
+
+    $server = $server->run_psql(@args)
+
+    $server->run_psql('-c', q|"INSERT INTO foo (bar) VALUES ('baz')"|);
+
+
+=head2 run_psql_scripts
+
+    $server = $server->run_psql_scripts($path)
 
 
 =head1 REQUIREMENT
