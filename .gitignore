@@ -28,4 +28,4 @@ cover_db/
 
 MYMETA.*
 
-/Test-MockServer-Postgresql-*
+/Test-PostgreSQL-Docker-*

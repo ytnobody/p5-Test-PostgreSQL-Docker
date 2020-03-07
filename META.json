@@ -12,7 +12,7 @@
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
       "version" : "2"
    },
-   "name" : "Test-MockServer-Postgresql",
+   "name" : "Test-PostgreSQL-Docker",
    "no_index" : {
       "directory" : [
          "t",
@@ -47,7 +47,7 @@
             "Guard" : "0",
             "Net::EmptyPort" : "0",
             "Sub::Retry" : "0",
-            "perl" : "5.008001"
+            "perl" : "5.014"
          }
       },
       "test" : {
@@ -57,8 +57,22 @@
       }
    },
    "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/ytnobody/p5-Test-MockServer-Postgresql/issues"
+      },
+      "homepage" : "https://github.com/ytnobody/p5-Test-MockServer-Postgresql",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/ytnobody/p5-Test-MockServer-Postgresql.git",
+         "web" : "https://github.com/ytnobody/p5-Test-MockServer-Postgresql"
+      }
+   },
    "version" : "0.01",
    "x_authority" : "cpan:YTURTLE",
+   "x_contributors" : [
+      "makamaka <makamaka.donzoko@gmail.com>"
+   ],
    "x_serialization_backend" : "JSON::PP version 2.27300",
    "x_static_install" : 1
 }

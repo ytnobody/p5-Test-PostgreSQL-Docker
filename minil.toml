@@ -1,4 +1,4 @@
-name = "Test-MockServer-Postgresql"
+name = "Test-PostgreSQL-Docker"
 # badges = ["travis-ci.com"]
 authority="cpan:YTURTLE"
 
