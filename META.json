@@ -59,13 +59,13 @@
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/ytnobody/p5-Test-MockServer-Postgresql/issues"
+         "web" : "https://github.com/ytnobody/p5-Test-PostgreSQL-Docker/issues"
       },
-      "homepage" : "https://github.com/ytnobody/p5-Test-MockServer-Postgresql",
+      "homepage" : "https://github.com/ytnobody/p5-Test-PostgreSQL-Docker",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/ytnobody/p5-Test-MockServer-Postgresql.git",
-         "web" : "https://github.com/ytnobody/p5-Test-MockServer-Postgresql"
+         "url" : "git://github.com/ytnobody/p5-Test-PostgreSQL-Docker.git",
+         "web" : "https://github.com/ytnobody/p5-Test-PostgreSQL-Docker"
       }
    },
    "version" : "0.01",
