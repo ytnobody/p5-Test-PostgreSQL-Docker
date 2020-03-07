@@ -17,7 +17,7 @@ sub new {
         tag     => 'latest',
         port    => empty_port(),
         host    => "127.0.0.1",
-        user    => "postgres",
+        dbowner => "postgres",
         password=> "postgres",
         dbname  => "test",
         %opts,
@@ -51,7 +51,7 @@ sub run {
     };
 
     my $host = $self->{host};
-    my $user = $self->{user};
+    my $user = $self->{dbowner};
     my $pass = $self->{password};
     my $port = $self->{port};
     my $dbname = $self->{dbname};
@@ -75,7 +75,7 @@ sub dsn {
     my ($self, %args) = @_;
     $args{port}     ||= $self->{port};
     $args{host}     ||= $self->{host};
-    $args{user}     ||= $self->{user};
+    $args{user}     ||= $self->{dbowner};
     $args{dbname}   ||= $self->{dbname};
     $args{password} ||= $self->{password};
     return 'DBI:Pg:' . join(';', map { "$_=$args{$_}" } sort keys %args);
@@ -168,7 +168,7 @@ A distribution name. Default is C<postgres>.
 
 A tag of the PostgreSQL. Default is C<latest>. 
 
-=item user (str)
+=item dbowner (str)
 
 Default is C<postgres>.
 
