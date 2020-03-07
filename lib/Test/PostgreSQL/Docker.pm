@@ -1,4 +1,4 @@
-package Test::MockServer::Postgresql;
+package Test::PostgreSQL::Docker;
 use 5.014;
 use strict;
 use warnings;
@@ -136,15 +136,15 @@ __END__
 
 =head1 NAME
 
-Test::MockServer::Postgresql - A Postgresql mock server for testing perl programs
+Test::PostgreSQL::Docker - A Postgresql mock server for testing perl programs
 
 =head1 SYNOPSIS
 
     use Test::More;
-    use Test::MockServer::Postgresql;
+    use Test::PostgreSQL::Docker;
     
-    # 1. create a instance of Test::MockServer::Postgresql with postgres:12-alpine image
-    my $server = Test::MockServer::Postgresql->new(tag => '12-alpine');
+    # 1. create a instance of Test::PostgreSQL::Docker with postgres:12-alpine image
+    my $server = Test::PostgreSQL::Docker->new(tag => '12-alpine');
     
     # 2. create/run a container
     $server->run();
@@ -170,7 +170,7 @@ Test::MockServer::Postgresql - A Postgresql mock server for testing perl program
 
 =head1 DESCRIPTION
 
-Test::MockServer::Postgresql run the postgres container on the Docker, for testing your perl programs.
+Test::PostgreSQL::Docker run the postgres container on the Docker, for testing your perl programs.
 
 B<**NOTE**> Maybe this module doesn't work on the Windows, because this module uses some backticks for use the Docker.
 
@@ -179,7 +179,7 @@ B<**NOTE**> Maybe this module doesn't work on the Windows, because this module u
 
 =head2 new
 
-    $server = Test::MockServer::Postgresql->new(%opt)
+    $server = Test::PostgreSQL::Docker->new(%opt)
 
 =over 2
 

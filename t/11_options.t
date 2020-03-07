@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::MockServer::Postgresql;
+use Test::PostgreSQL::Docker;
 
 my %opt = (
     tag    => '12-alpine',
@@ -9,7 +9,7 @@ my %opt = (
     user   => 'foobar',
 );
 
-my $server = Test::MockServer::Postgresql->new(%opt);
+my $server = Test::PostgreSQL::Docker->new(%opt);
 
 ok $server->run(), "server is runing";
 
