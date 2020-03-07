@@ -2,7 +2,7 @@ CREATE TABLE Users(
   account_id        SERIAL PRIMARY KEY,
   account_name      VARCHAR(20),
   email             VARCHAR(100),
-  password    CHAR(64)
+  password          VARCHAR(64)
 );
 
 INSERT INTO Users (account_name, email, password) 
