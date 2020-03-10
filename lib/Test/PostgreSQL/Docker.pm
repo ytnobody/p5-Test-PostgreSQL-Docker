@@ -224,7 +224,7 @@ Test::PostgreSQL::Docker - A Postgresql mock server for testing perl programs
 
 Test::PostgreSQL::Docker run the postgres container on the Docker, for testing your perl programs.
 
-B<**NOTE**> Maybe this module doesn't work on the Windows, because this module uses some backticks for use the Docker.
+B<**NOTE**> Maybe this module doesn't work on the Windows, because we don't any test on Windows machine.
 
 
 =head1 METHODS
