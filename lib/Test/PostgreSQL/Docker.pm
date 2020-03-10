@@ -2,7 +2,6 @@ package Test::PostgreSQL::Docker;
 use 5.014;
 use strict;
 use warnings;
-use Guard qw/guard/;
 use DBI;
 use DBD::Pg;
 use Sub::Retry qw/retry/;
