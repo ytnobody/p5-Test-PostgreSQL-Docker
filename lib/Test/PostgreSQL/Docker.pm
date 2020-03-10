@@ -7,6 +7,7 @@ use DBI;
 use DBD::Pg;
 use Sub::Retry qw/retry/;
 use Net::EmptyPort qw/empty_port/;
+use IPC::Run ();
 
 our $VERSION = "0.02";
 our $DEBUG;
@@ -22,6 +23,7 @@ sub new {
         dbowner => "postgres",
         password=> "postgres",
         dbname  => "test",
+        print_docker_error => 1,
         %opts,
     }, $class;
     $self->oid;
@@ -73,12 +75,27 @@ sub DESTROY {
     $self->docker_cmd(kill => $self->container_name);
 }
 
+sub docker {
+    shift->{docker};
+}
+
 sub docker_cmd {
-    my ( $self, $action, @args  ) = @_;
-    my $cmd = join(' ', 'docker', $action, @args);
-    $DEBUG && print STDERR $cmd,"\n";
-    `$cmd`;
-    $self;
+    my ( $self, $action, $args, $io ) = @_;
+    $args //= [];
+    my @cmds = ($self->docker, $action, @$args);
+    $DEBUG && print STDERR join(' ', @cmds),"\n";
+
+    my ( $in, $out, $err );
+    if ( $io ) {
+        IPC::Run::run( \@cmds, '<', ($io->{in} ? $io->{in} : \$in), '>', ($io->{out} ? $io->{out} : \$out), '2>', ($io->{err} ? $io->{err} : \$err) );
+    }
+    else {
+        IPC::Run::run \@cmds, \$in, \$out, \$err;
+    }
+
+    $self->{print_docker_error} && $err && print STDERR $err, "\n";
+
+    return ($out, $err);
 }
 
 sub psql_args {
@@ -220,6 +237,10 @@ Default is C<postgres>.
 =item dbname (str)
 
 Default is C<test>.
+
+=item print_docker_error (bool)
+
+Show docker error. Default is C<true value>.
 
 =back
 
