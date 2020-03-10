@@ -104,19 +104,23 @@ sub psql_args {
         $self->{psql_args} = $_[0];
     }
     $self->{psql_args}
-        ||= sprintf('-h %s -p %s -U %s -d %s', $self->{host}, 5432, $self->{dbowner}, $self->{dbname});
+        ||= ['-h', $self->{host}, '-p', 5432, '-U', $self->{dbowner}, '-d',  $self->{dbname}];
 }
 
 sub run_psql {
     my ($self, @args) = @_;
+    my %io;
+    if ( ref($args[-1]) eq 'HASH' ) {
+        %io = %{ (pop @args) };
+    }
     $self->dbh(); ## waiting for DB connection
-    $self->docker_cmd( exec => '-i', $self->container_name, 'psql', $self->psql_args, @args );
+    $self->docker_cmd( exec => ['-i', $self->container_name, 'psql', @{$self->psql_args}, @args], \%io );
 }
 
 sub run_psql_scripts {
     my ($self, @scripts) = @_;
     for my $script ( @scripts ) {
-        $self->run_psql("< $script");
+        $self->run_psql({ in => $script });
     }
     $self;
 }
@@ -314,7 +318,7 @@ Default is C<sprintf('-h %s -p %s -U %s -d %s', $self->{host}, 5432, $self->{dbo
 
     $server = $server->run_psql(@args)
 
-    $server->run_psql('-c', q|"INSERT INTO foo (bar) VALUES ('baz')"|);
+    $server->run_psql('-c', q|INSERT INTO foo (bar) VALUES ('baz')|);
 
 
 =head2 run_psql_scripts
