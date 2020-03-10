@@ -44,7 +44,7 @@ sub oid {
 sub pull {
     my ($self) = @_;
     my $image = $self->image_name();
-    $self->docker_cmd(pull => '--quiet', $image);
+    $self->docker_cmd(pull => ['--quiet', $image]);
     $self;
 }
 
@@ -61,10 +61,15 @@ sub run {
     my $pass = $self->{password};
     my $port = $self->{port};
     my $dbname = $self->{dbname};
-    $self->docker_cmd(run => "--rm --name $ctname -p $host:$port:5432 -e POSTGRES_USER=$user -e POSTGRES_PASSWORD=$pass -e POSTGRES_DB=$dbname -d $image");
-        $self->{_orig_address} = $self->_address;
+    my @envs   = map { ('-e', $_) } "POSTGRES_USER=$user", "POSTGRES_PASSWORD=$pass", "POSTGRES_DB=$dbname";
+    my ( $out, $err ) = $self->docker_cmd(run => ['--rm', '--name', $ctname, '-p', "$host:$port:5432", @envs, '-d', "$image"]);
 
-    $self->dbh unless $opt{skip_connect};
+    if ( !$err or $err =~ /Status: Downloaded newer image for/) { # for auto pulling
+        $self->{docker_is_running} = 1;
+        $self->{_orig_address} = $self->_address;
+        $self->dbh unless $opt{skip_connect};
+    }
+
     $self;
 }
 
@@ -72,7 +77,7 @@ sub DESTROY {
     my ( $self ) = @_;
     $self->{dbh}->disconnect() if defined $self->{dbh};
     return if $self->_address ne $self->{_orig_address};
-    $self->docker_cmd(kill => $self->container_name);
+    $self->docker_cmd(kill => [$self->container_name]) if $self->docker_is_running;
 }
 
 sub docker {
