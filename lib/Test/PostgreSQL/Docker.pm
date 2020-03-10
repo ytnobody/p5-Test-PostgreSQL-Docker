@@ -14,6 +14,7 @@ our $DEBUG;
 sub new {
     my ($class, %opts) = @_;
     my $self = bless {
+        docker  => '/usr/bin/docker',
         pgname  => "postgres",
         tag     => 'latest',
         port    => empty_port(),
@@ -191,6 +192,10 @@ B<**NOTE**> Maybe this module doesn't work on the Windows, because this module u
     $server = Test::PostgreSQL::Docker->new(%opt)
 
 =over 2
+
+=item docker (str)
+
+The path to C<docker>. Default is C</usr/bin/docker>.
 
 =item pgname (str)
 
