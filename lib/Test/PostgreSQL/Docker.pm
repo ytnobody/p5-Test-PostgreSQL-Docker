@@ -14,7 +14,7 @@ our $DEBUG;
 sub new {
     my ($class, %opts) = @_;
     my $self = bless {
-        docker  => '/usr/bin/docker',
+        docker  => undef,
         pgname  => "postgres",
         tag     => 'latest',
         port    => empty_port(),
@@ -25,8 +25,22 @@ sub new {
         print_docker_error => 1,
         %opts,
     }, $class;
+    $self->{docker} = $self->_search_docker_path() unless $self->docker;
     $self->oid;
     return $self;
+}
+
+sub _search_docker_path {
+    my $self = shift;
+    my @paths = qw( /usr/bin /usr/local/bin );
+    my $decided;
+    for my $path ( @paths ) {
+        if ( -x "$path/docker" ) {
+            $decided = "$path/docker";
+            last;
+        }
+    }
+    return $decided;
 }
 
 sub _address {
