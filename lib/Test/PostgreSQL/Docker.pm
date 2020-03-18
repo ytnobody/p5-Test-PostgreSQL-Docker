@@ -186,7 +186,9 @@ sub port {
 
 sub container_name {
     my ($self) = @_;
-    sprintf "%s-%s-%s", $self->{pgname}, $self->{tag}, $self->oid;
+    my $pgname = $self->{pgname};
+    $pgname =~ s/[^a-zA-Z0-9_.-]/__/g;
+    sprintf "%s-%s-%s", $pgname, $self->{tag}, $self->oid;
 }
 
 sub image_name {
