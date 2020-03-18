@@ -108,7 +108,7 @@ sub docker_is_running {
 
 sub docker_daemon_is_accessible {
     my ( $self ) = @_;
-    return unless -e $self->docker;
+    return unless -x $self->docker;
     my ( $out, $err ) = $self->docker_cmd('ps');
     $err ? 0 : 1;
 }
