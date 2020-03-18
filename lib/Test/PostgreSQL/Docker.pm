@@ -385,6 +385,7 @@ Satoshi Azuma E<lt>ytnobody@gmail.comE<gt>
 
 =head1 SEE ALSO
 
+L<Test::PostgreSQL>
 L<https://hub.docker.com/_/postgres>
 
 =cut
