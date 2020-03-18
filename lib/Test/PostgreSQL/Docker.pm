@@ -6,6 +6,7 @@ use DBI;
 use DBD::Pg;
 use Sub::Retry qw/retry/;
 use Net::EmptyPort qw/empty_port/;
+use IPC::Run ();
 
 our $VERSION = "0.02";
 our $DEBUG;
@@ -13,6 +14,7 @@ our $DEBUG;
 sub new {
     my ($class, %opts) = @_;
     my $self = bless {
+        docker  => undef,
         pgname  => "postgres",
         tag     => 'latest',
         port    => empty_port(),
@@ -20,11 +22,26 @@ sub new {
         dbowner => "postgres",
         password=> "postgres",
         dbname  => "test",
+        print_docker_error => 1,
         _orig_address => '',
         %opts,
     }, $class;
+    $self->{docker} = $self->_search_docker_path() unless $self->docker;
     $self->oid;
     return $self;
+}
+
+sub _search_docker_path {
+    my $self = shift;
+    my @paths = qw( /usr/bin /usr/local/bin );
+    my $decided;
+    for my $path ( @paths ) {
+        if ( -x "$path/docker" ) {
+            $decided = "$path/docker";
+            last;
+        }
+    }
+    return $decided;
 }
 
 sub _address {
@@ -41,12 +58,16 @@ sub oid {
 sub pull {
     my ($self) = @_;
     my $image = $self->image_name();
-    $self->docker_cmd(pull => '--quiet', $image);
+    $self->docker_cmd(pull => ['--quiet', $image]);
     $self;
 }
 
 sub run {
     my ($self, %opt) = @_;
+
+    return $self unless $self->docker_daemon_is_accessible;
+    return $self if $self->docker_is_running;
+
     $self->pull() unless (exists $opt{skip_pull} ? $opt{skip_pull} : 1);
 
     my $image = $self->image_name();
@@ -58,10 +79,15 @@ sub run {
     my $pass = $self->{password};
     my $port = $self->{port};
     my $dbname = $self->{dbname};
-    $self->docker_cmd(run => "--rm --name $ctname -p $host:$port:5432 -e POSTGRES_USER=$user -e POSTGRES_PASSWORD=$pass -e POSTGRES_DB=$dbname -d $image");
-        $self->{_orig_address} = $self->_address;
+    my @envs   = map { ('-e', $_) } "POSTGRES_USER=$user", "POSTGRES_PASSWORD=$pass", "POSTGRES_DB=$dbname";
+    my ( $out, $err ) = $self->docker_cmd(run => ['--rm', '--name', $ctname, '-p', "$host:$port:5432", @envs, '-d', "$image"]);
 
-    $self->dbh unless $opt{skip_connect};
+    if ( !$err or $err =~ /Status: Downloaded newer image for/) { # for auto pulling
+        $self->{docker_is_running} = 1;
+        $self->{_orig_address} = $self->_address;
+        $self->dbh unless $opt{skip_connect};
+    }
+
     $self;
 }
 
@@ -72,12 +98,38 @@ sub DESTROY {
     $self->docker_cmd(kill => [$self->container_name]) if $self->docker_is_running;
 }
 
+sub docker {
+    shift->{docker};
+}
+
+sub docker_is_running {
+    shift->{docker_is_running};
+}
+
+sub docker_daemon_is_accessible {
+    my ( $self ) = @_;
+    return unless -x $self->docker;
+    my ( $out, $err ) = $self->docker_cmd('ps');
+    $err ? 0 : 1;
+}
+
 sub docker_cmd {
-    my ( $self, $action, @args  ) = @_;
-    my $cmd = join(' ', 'docker', $action, @args);
-    $DEBUG && print STDERR $cmd,"\n";
-    `$cmd`;
-    $self;
+    my ( $self, $action, $args, $io ) = @_;
+    $args //= [];
+    my @cmds = ($self->docker, $action, @$args);
+    $DEBUG && print STDERR join(' ', @cmds),"\n";
+
+    my ( $in, $out, $err );
+    if ( $io ) {
+        IPC::Run::run( \@cmds, '<', ($io->{in} ? $io->{in} : \$in), '>', ($io->{out} ? $io->{out} : \$out), '2>', ($io->{err} ? $io->{err} : \$err) );
+    }
+    else {
+        IPC::Run::run \@cmds, \$in, \$out, \$err;
+    }
+
+    $self->{print_docker_error} && $err && print STDERR $err, "\n";
+
+    return ($out, $err);
 }
 
 sub psql_args {
@@ -86,19 +138,23 @@ sub psql_args {
         $self->{psql_args} = $_[0];
     }
     $self->{psql_args}
-        ||= sprintf('-h %s -p %s -U %s -d %s', $self->{host}, 5432, $self->{dbowner}, $self->{dbname});
+        ||= ['-h', $self->{host}, '-p', 5432, '-U', $self->{dbowner}, '-d',  $self->{dbname}];
 }
 
 sub run_psql {
     my ($self, @args) = @_;
+    my %io;
+    if ( ref($args[-1]) eq 'HASH' ) {
+        %io = %{ (pop @args) };
+    }
     $self->dbh(); ## waiting for DB connection
-    $self->docker_cmd( exec => '-i', $self->container_name, 'psql', $self->psql_args, @args );
+    $self->docker_cmd( exec => ['-i', $self->container_name, 'psql', @{$self->psql_args}, @args], \%io );
 }
 
 sub run_psql_scripts {
     my ($self, @scripts) = @_;
     for my $script ( @scripts ) {
-        $self->run_psql("< $script");
+        $self->run_psql({ in => $script });
     }
     $self;
 }
