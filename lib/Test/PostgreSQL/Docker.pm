@@ -239,7 +239,7 @@ Test::PostgreSQL::Docker - A Postgresql mock server for testing perl programs
 
 Test::PostgreSQL::Docker run the postgres container on the Docker, for testing your perl programs.
 
-B<**NOTE**> Maybe this module doesn't work on the Windows, because this module uses some backticks for use the Docker.
+B<**NOTE**> Maybe this module doesn't work on the Windows, because we don't any test on Windows machine.
 
 
 =head1 METHODS
@@ -249,6 +249,10 @@ B<**NOTE**> Maybe this module doesn't work on the Windows, because this module u
     $server = Test::PostgreSQL::Docker->new(%opt)
 
 =over 2
+
+=item docker (str)
+
+The path to C<docker>. Default is C</usr/bin/docker>.
 
 =item pgname (str)
 
@@ -273,6 +277,10 @@ Default is C<postgres>.
 =item dbname (str)
 
 Default is C<test>.
+
+=item print_docker_error (bool)
+
+Show docker error. Default is C<true value>.
 
 =back
 
@@ -346,12 +354,26 @@ Default is C<sprintf('-h %s -p %s -U %s -d %s', $self->{host}, 5432, $self->{dbo
 
     $server = $server->run_psql(@args)
 
-    $server->run_psql('-c', q|"INSERT INTO foo (bar) VALUES ('baz')"|);
+    $server->run_psql('-c', q|INSERT INTO foo (bar) VALUES ('baz')|);
 
 
 =head2 run_psql_scripts
 
     $server = $server->run_psql_scripts($path)
+
+
+=head2 docker_is_running
+
+    $server = $server->docker_is_running()
+
+Return true if docker container is running.
+
+
+=head2 docker_daemon_is_accessible
+
+    $server = $server->docker_daemon_is_accessible()
+
+Return true if docker daemon is accessible.
 
 
 =head1 REQUIREMENT
@@ -377,6 +399,7 @@ Satoshi Azuma E<lt>ytnobody@gmail.comE<gt>
 
 =head1 SEE ALSO
 
+L<Test::PostgreSQL>
 L<https://hub.docker.com/_/postgres>
 
 =cut
