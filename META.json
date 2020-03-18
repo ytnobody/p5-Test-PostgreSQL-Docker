@@ -44,7 +44,7 @@
          "requires" : {
             "DBD::Pg" : "0",
             "DBI" : "0",
-            "Guard" : "0",
+            "IPC::Run" : "0",
             "Net::EmptyPort" : "0",
             "Sub::Retry" : "0",
             "perl" : "5.014"
