@@ -23,6 +23,7 @@ sub new {
         password=> "postgres",
         dbname  => "test",
         print_docker_error => 1,
+        _orig_address => '',
         %opts,
     }, $class;
     $self->{docker} = $self->_search_docker_path() unless $self->docker;
