@@ -2,7 +2,6 @@ package Test::PostgreSQL::Docker;
 use 5.014;
 use strict;
 use warnings;
-use Guard qw/guard/;
 use DBI;
 use DBD::Pg;
 use Sub::Retry qw/retry/;
@@ -21,16 +20,22 @@ sub new {
         dbowner => "postgres",
         password=> "postgres",
         dbname  => "test",
+        _orig_address => '',
         %opts,
     }, $class;
     $self->oid;
     return $self;
 }
 
+sub _address {
+    my $self = shift;
+    ("$self" =~ /HASH\(0x([0-9a-f]+)\)/)[0];
+}
+
 sub oid {
     my ( $self ) = @_;
     return $self->{oid} if defined $self->{oid};
-    $self->{oid} = ("$self" =~ /HASH\(0x([0-9a-f]+)\)/)[0];
+    $self->{oid} = $self->_address;
 }
 
 sub pull {
@@ -47,10 +52,6 @@ sub run {
     my $image = $self->image_name();
     my $ctname = $self->container_name();
     my $class  = ref($self);
-    $self->{cleanup} = guard {
-        $self->{dbh}->disconnect() if defined $self->{dbh};
-        $class->docker_cmd(kill => $ctname); # $self is undef?
-    };
 
     my $host = $self->{host};
     my $user = $self->{dbowner};
@@ -58,9 +59,17 @@ sub run {
     my $port = $self->{port};
     my $dbname = $self->{dbname};
     $self->docker_cmd(run => "--rm --name $ctname -p $host:$port:5432 -e POSTGRES_USER=$user -e POSTGRES_PASSWORD=$pass -e POSTGRES_DB=$dbname -d $image");
+        $self->{_orig_address} = $self->_address;
 
     $self->dbh unless $opt{skip_connect};
     $self;
+}
+
+sub DESTROY {
+    my ( $self ) = @_;
+    $self->{dbh}->disconnect() if defined $self->{dbh};
+    return if $self->_address ne $self->{_orig_address};
+    $self->docker_cmd(kill => [$self->container_name]) if $self->docker_is_running;
 }
 
 sub docker_cmd {
