@@ -13,9 +13,13 @@ unless ( $server->docker_is_running ) {
     exit;
 }
 
-isa_ok($server, 'Test::PostgreSQL::Docker');
-can_ok($server, qw/pull run psql_args run_psql run_psql_scripts oid dbh dsn container_name image_name
-                                docker docker_daemon_is_accessible docker_is_running/);
+diag "Image name ... " . $server->image_name;
+
+unless ( $server->container_name =~ /kazaoki__postgres-bigm-/ ) {
+    plan skip_all => "Container is mismatched. if you use 'prove -Pt::Util', set PERL_TEST_PG_DOCKER_REP=kazaoki/postgres-bigm and PERL_TEST_PG_DOCKER_TAG=10-alpine";
+    exit;
+}
+
 my $fixture_file = File::Spec->catfile(qw/t data fixture_bigm.sql/);
 
 my $dbh = $server
