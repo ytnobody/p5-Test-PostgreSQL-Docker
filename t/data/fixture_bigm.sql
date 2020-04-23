@@ -1,3 +1,6 @@
+-- XXX must enable the pg_bigm extension first
+CREATE EXTENSION pg_bigm;
+
 CREATE TABLE Items(
   id   SERIAL PRIMARY KEY,
   name VARCHAR(20),

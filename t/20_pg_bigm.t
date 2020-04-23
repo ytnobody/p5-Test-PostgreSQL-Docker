@@ -43,10 +43,10 @@ is_deeply($res, {
 
 $server->run_psql('-c', q|INSERT INTO Items (name, note) VALUES ('まんげつそう', 'マヒを回復する')|);
 my ($new_id) = $dbh->selectrow_array(q/SELECT id FROM Items WHERE name='まんげつそう'/);
-diag explain($new_id);
 
 $sth = $dbh->prepare(q/SELECT * FROM Items WHERE note LIKE likequery(?)/);
-$res = $sth->execute('回復');
+$sth->execute('回復');
+$res = $sth->fetchall_hashref('id');
 is_deeply($res, {
     '1' => {
         'id' => 1,
