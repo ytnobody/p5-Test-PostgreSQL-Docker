@@ -2,6 +2,9 @@ Revision history for Perl extension Test-PostgreSQL-Docker
 
 {{$NEXT}}
 
+0.03002 2020-05-29T09:05:42Z
+    - Added PID check when DESTROY called
+
 0.03001 2020-04-30T04:43:59Z
     - Add developer tests: Use-case of pg_bigm on kazaoki/postgres-bigm:10-alpine image
     - Remove .vstags from package
