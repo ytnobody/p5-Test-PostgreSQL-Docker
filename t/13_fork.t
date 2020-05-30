@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use lib qw(t/lib);
-use Test::More tests => 4;
+use Test::More;
 use Test::SharedFork;
 use t::Util;
 
@@ -39,3 +39,5 @@ open( my $fh, '>>', \$err );
 }
 
 ok !$err, $err;
+
+done_testing;
