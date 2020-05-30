@@ -8,7 +8,7 @@ use Sub::Retry qw/retry/;
 use Net::EmptyPort qw/empty_port/;
 use IPC::Run ();
 
-our $VERSION = "0.03002";
+our $VERSION = "0.03003";
 our $DEBUG;
 
 sub new {
